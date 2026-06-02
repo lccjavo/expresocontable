@@ -4,16 +4,59 @@ function waitFrame() {
   return new Promise((resolve) => requestAnimationFrame(resolve));
 }
 
-let currentUploadMode = sessionStorage.getItem('expreso_contable_upload_mode') || 'facturas';
+function looksLikeSatDeclaration(text) {
+  const norm = text.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return /DECLARACI[OA]N\s+(PROVISIONAL|DEFINITIVA|ANUAL)|TIPO\s+DE\s+DECLARACI[OA]N|RESICO|ISR\s+SIMPLIFICADO\s+DE\s+CONFIANZA|IMPUESTO\s+SOBRE\s+LA\s+RENTA|IMPUESTO\s+AL\s+VALOR\s+AGREGADO/.test(norm);
+}
 
-function setUploadMode(mode) {
-  currentUploadMode = mode === 'declaraciones' ? 'declaraciones' : 'facturas';
-  sessionStorage.setItem('expreso_contable_upload_mode', currentUploadMode);
-  document.querySelectorAll('[data-upload-mode]').forEach((btn) => btn.classList.toggle('active', btn.getAttribute('data-upload-mode') === currentUploadMode));
-  const status = document.querySelector('[data-upload-status]');
-  if (status) status.textContent = currentUploadMode === 'declaraciones' ? 'Selecciona PDF de declaración SAT para guardarla y conciliarla.' : 'Selecciona XML, PDF o ZIP para analizarlos.';
-  const input = document.querySelector('#invoice-files');
-  if (input) input.setAttribute('accept', currentUploadMode === 'declaraciones' ? '.pdf' : '.xml,.pdf,.zip');
+async function detectSatDeclaration(pdfFile) {
+  try {
+    if (!window.pdfjsLib) return false;
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const buffer = await pdfFile.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data: buffer }).promise;
+    let text = '';
+    for (let i = 1; i <= Math.min(2, pdf.numPages); i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map((item) => item.str).join(' ');
+    }
+    return looksLikeSatDeclaration(text);
+  } catch {
+    return false;
+  }
+}
+
+async function runSmartUpload(inputFiles) {
+  const xmlAndZip = inputFiles.filter((f) => !f.name.toLowerCase().endsWith('.pdf'));
+  const pdfs = inputFiles.filter((f) => f.name.toLowerCase().endsWith('.pdf'));
+
+  const satDeclarations = [];
+  if (pdfs.length > 0) {
+    showProgressPage(true);
+    setProgress(5, `Detectando tipo de archivo (${pdfs.length} PDF)...`);
+    renderCounters({});
+    for (const pdf of pdfs) {
+      addLog(`Verificando: ${pdf.name}`);
+      const isSat = await detectSatDeclaration(pdf);
+      if (isSat) {
+        satDeclarations.push(pdf);
+        addLog(`Declaración SAT detectada: ${pdf.name}`, 'text-success');
+      } else {
+        addLog(`PDF ignorado (no es declaración SAT): ${pdf.name}`, 'text-warning');
+      }
+    }
+  }
+
+  if (xmlAndZip.length === 0 && satDeclarations.length === 0) {
+    showProgressPage(true);
+    setProgress(100, 'No se encontraron archivos procesables.');
+    addLog('Sube XML/ZIP de facturas CFDI o el PDF de tu declaración SAT.', 'text-warning');
+    return;
+  }
+
+  if (xmlAndZip.length > 0) await runAnalysis(xmlAndZip);
+  if (satDeclarations.length > 0) await runDeclarationAnalysis(satDeclarations);
 }
 
 function xmlAttr(node, name) {
@@ -762,10 +805,7 @@ async function runAnalysis(inputFiles) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('[data-upload-mode]').forEach((btn) => btn.addEventListener('click', () => setUploadMode(btn.getAttribute('data-upload-mode'))));
-  setUploadMode(currentUploadMode);
   const fileInput = document.querySelector('#invoice-files');
-  const status = document.querySelector('[data-upload-status]');
   const dropzone = document.querySelector('[data-dropzone]');
   const list = document.querySelector('[data-file-list]');
   const taxInput = document.querySelector('#business-rfc');
@@ -816,17 +856,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   fileInput?.addEventListener('change', async (event) => {
-  const files = Array.from(event.target.files || []);
-  if (!files.length) return;
-  renderFileList(files);
-  try {
-    if (currentUploadMode === 'declaraciones') await runDeclarationAnalysis(files);
-    else await runAnalysis(files);
-  } catch (error) {
-    setProgress(100, `Error: ${error.message}`);
-    addLog(`ERROR: ${error.message}`);
-  } finally {
-    event.target.value = '';
-  }
-});
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+    renderFileList(files);
+    try {
+      await runSmartUpload(files);
+    } catch (error) {
+      setProgress(100, `Error: ${error.message}`);
+      addLog(`ERROR: ${error.message}`);
+    } finally {
+      event.target.value = '';
+    }
+  });
 });

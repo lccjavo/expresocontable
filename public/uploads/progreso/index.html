@@ -71,25 +71,8 @@
             <span class="status-pill is-unlocked">Activo</span>
           </div>
 
-          <div class="row g-3 mb-4" data-document-tabs>
-            <div class="col-md-6">
-              <button class="doc-type-card active" type="button" data-upload-mode="facturas">
-                <span class="doc-type-icon">XML</span>
-                <strong>Facturas</strong>
-                <small>XML o ZIP con XML/PDF de CFDI para estimar ingresos, gastos, IVA e ISR.</small>
-              </button>
-            </div>
-            <div class="col-md-6">
-              <button class="doc-type-card" type="button" data-upload-mode="declaraciones">
-                <span class="doc-type-icon">SAT</span>
-                <strong>Declaraciones</strong>
-                <small>PDF de declaración provisional/definitiva para guardar el resultado fiscal final.</small>
-              </button>
-            </div>
-          </div>
-
-          <div class="alert alert-warning border-0 rounded-4 small mb-4">
-            <strong>Antes de analizar:</strong> guarda el RFC de tu negocio para clasificar automáticamente. Si no lo capturas, el sistema intentará inferirlo del bonche de CFDI.
+          <div class="alert alert-info border-0 rounded-4 small mb-4">
+            <strong>Detección automática:</strong> sube XML o ZIP para facturas CFDI, o el PDF de tu declaración SAT — la app detecta el tipo de archivo y lo procesa correctamente. Guarda tu RFC para clasificar ingresos y gastos automáticamente.
           </div>
 
           <div class="row g-2 mb-4">
@@ -105,8 +88,8 @@
           <label class="dropzone rounded-4" for="invoice-files" data-dropzone aria-disabled="false">
             <span>
               <img src="/assets/branding/logo-icon-clean.png" alt="" class="dropzone-icon mb-3">
-              <strong class="d-block h5 text-primary-brand mb-2">Arrastra tus facturas o declaraciones aquí</strong>
-              <p class="mb-0 text-secondary" data-upload-status>Selecciona XML/ZIP para facturas o PDF SAT para declaraciones.</p>
+              <strong class="d-block h5 text-primary-brand mb-2">Arrastra tus archivos aquí</strong>
+              <p class="mb-0 text-secondary" data-upload-status>XML / ZIP de facturas CFDI o PDF de declaración SAT — se detectan automáticamente.</p>
             </span>
             <input id="invoice-files" type="file" multiple accept=".xml,.pdf,.zip" hidden>
           </label>
