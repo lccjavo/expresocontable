@@ -750,7 +750,7 @@ async function runAnalysis(inputFiles) {
     const m = invoiceMonth(inv);
     if (m && m !== 'Sin fecha') batchMonths[m] = (batchMonths[m] || 0) + 1;
   }
-  const topMonth = Object.entries(batchMonths).sort((a, b) => b[1] - a[1] || b[0].localeCompare(a[0]))[0]?.[0];
+  const topMonth = Object.keys(batchMonths).sort().reverse()[0];
   if (topMonth) saveFilters({ year: topMonth.slice(0, 4), month: topMonth });
 
   populateFilterControls();
