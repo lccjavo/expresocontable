@@ -282,10 +282,15 @@ async function loadAnalysisRemote() {
   const companyId = ACCOUNT_ANALYSIS_ID;
   const data = await authJson(`get-analysis?companyId=${encodeURIComponent(companyId)}`, { method: 'GET', headers: {} });
   if (data.analysis) {
-    if (data.analysis.profile && typeof saveProfile === 'function') saveProfile(data.analysis.profile);
-    const recomputed = recomputeAnalysis({ ...emptyAnalysis(), ...data.analysis, invoices: data.analysis.invoices || [] });
-    saveAnalysis(recomputed);
-    return recomputed;
+    const local = loadAnalysis();
+    const serverNewer = (data.analysis.updatedAt || '') >= (local.updatedAt || '');
+    if (serverNewer) {
+      if (data.analysis.profile && typeof saveProfile === 'function') saveProfile(data.analysis.profile);
+      const recomputed = recomputeAnalysis({ ...emptyAnalysis(), ...data.analysis, invoices: data.analysis.invoices || [] });
+      saveAnalysis(recomputed);
+      return recomputed;
+    }
+    return local;
   }
   return loadAnalysis();
 }
