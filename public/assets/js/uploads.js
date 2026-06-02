@@ -645,6 +645,10 @@ async function runDeclarationAnalysis(inputFiles) {
   const current = loadAnalysis();
   const next = { ...current, declarations: mergeDeclarations(current.declarations || [], declarations), totals: { ...(current.totals || {}), pdfs: (current.totals?.pdfs || 0) + files.length } };
   const saved = await saveAnalysisRemote(recomputeAnalysis(next));
+
+  const declMonths = declarations.map((d) => declarationPeriodMonth(d)).filter((m) => m && m !== 'Sin fecha').sort().reverse();
+  if (declMonths[0]) saveFilters({ year: declMonths[0].slice(0, 4), month: declMonths[0] });
+
   setProgress(100, `Declaraciones guardadas: ${declarations.length}.`);
   hydrateAnalysisSummary(saved);
   updateCurrentPeriodLabel();
@@ -739,6 +743,16 @@ async function runAnalysis(inputFiles) {
 
   analysis = recomputeAnalysis(analysis);
   await saveAnalysisRemote(analysis);
+
+  const batchMonths = {};
+  for (const inv of analysis.invoices) {
+    if (inv.uploadBatchId !== uploadBatch.id) continue;
+    const m = invoiceMonth(inv);
+    if (m && m !== 'Sin fecha') batchMonths[m] = (batchMonths[m] || 0) + 1;
+  }
+  const topMonth = Object.entries(batchMonths).sort((a, b) => b[1] - a[1] || b[0].localeCompare(a[0]))[0]?.[0];
+  if (topMonth) saveFilters({ year: topMonth.slice(0, 4), month: topMonth });
+
   populateFilterControls();
   hydrateAnalysisSummary();
   updateCurrentPeriodLabel();
