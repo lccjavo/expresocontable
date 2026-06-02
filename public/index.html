@@ -59,9 +59,9 @@
   <div class="container-xxl">
     <div class="row g-5 align-items-center">
       <div class="col-lg-7">
-        <span class="badge rounded-pill text-bg-light border text-primary-emphasis px-3 py-2 mb-3">Análisis de CFDI en minutos</span>
+        <span class="badge rounded-pill text-bg-light border text-primary-emphasis px-3 py-2 mb-3">Análisis de CFDI · Conciliación SAT</span>
         <h1 class="display-2 display-title mb-4">Date un norte de tus impuestos.</h1>
-        <p class="lead lead-copy mb-4">Sube tus facturas de ingresos y gastos para estimar cuánto podrías pagar, detectar duplicados, entender tus productos vendidos y generar reportes sin capturas manuales.</p>
+        <p class="lead lead-copy mb-4">Sube tus facturas XML y declaraciones SAT para estimar IVA e ISR, detectar duplicados, conciliar lo declarado contra tus CFDI y generar reportes — sin capturas manuales.</p>
         <div class="d-flex flex-wrap gap-2">
           <a class="btn btn-primary btn-lg rounded-pill px-4" href="/register">Crear cuenta</a>
           <a class="btn btn-outline-primary btn-lg rounded-pill px-4" href="/login">Ya tengo cuenta</a>
@@ -75,10 +75,26 @@
 </section>
 <section class="container-xxl py-4">
   <div class="row g-4">
-    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">XML</div><h2 class="h5 text-primary-brand">Carga facturas</h2><p class="text-secondary mb-0">XML, PDF o ZIP para armar tu base de ingresos y gastos.</p></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">IVA</div><h2 class="h5 text-primary-brand">Calcula estimados</h2><p class="text-secondary mb-0">Un norte de IVA e impuestos basado en tus CFDI cargados.</p></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">SKU</div><h2 class="h5 text-primary-brand">Productos</h2><p class="text-secondary mb-0">Agrupa conceptos para ver qué productos se venden más.</p></div></div></div>
-    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">↗</div><h2 class="h5 text-primary-brand">Reportes</h2><p class="text-secondary mb-0">Resumen, filtros por periodo y claridad para tomar decisiones.</p></div></div></div>
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">XML</div><h2 class="h5 text-primary-brand">Carga facturas</h2><p class="text-secondary mb-0">XML, ZIP o PDF. La app detecta automáticamente si son CFDI o declaraciones SAT.</p></div></div></div>
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">IVA</div><h2 class="h5 text-primary-brand">Calcula estimados</h2><p class="text-secondary mb-0">Un norte de IVA e ISR basado en tus CFDI — separado por ingresos y gastos.</p></div></div></div>
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">SKU</div><h2 class="h5 text-primary-brand">Productos</h2><p class="text-secondary mb-0">Agrupa conceptos para ver qué productos se venden más y en qué periodos.</p></div></div></div>
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">↗</div><h2 class="h5 text-primary-brand">Reportes</h2><p class="text-secondary mb-0">Resumen mensual, filtros por periodo y exportación a Excel o PDF.</p></div></div></div>
+  </div>
+</section>
+<section class="container-xxl py-2 pb-4">
+  <div class="card soft-card border-0 bg-white p-4 p-md-5">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-2 text-center">
+        <div class="icon-tile mx-auto" style="width:3.5rem;height:3.5rem;font-size:1.5rem">✓</div>
+      </div>
+      <div class="col-lg-7">
+        <h2 class="h4 text-primary-brand mb-2">Conciliación con declaraciones SAT</h2>
+        <p class="text-secondary mb-0">Sube el PDF de tu declaración provisional y la app compara automáticamente lo estimado desde tus CFDI contra lo declarado ante el SAT — IVA a favor aplicado, compensaciones de ISR, retenciones y saldos — para que veas exactamente dónde está la diferencia y por qué.</p>
+      </div>
+      <div class="col-lg-3 text-lg-end">
+        <a class="btn btn-primary rounded-pill px-4" href="/register">Empezar gratis</a>
+      </div>
+    </div>
   </div>
 </section>
 <section class="container-xxl py-4">
