@@ -522,15 +522,18 @@ function renderDashboardConciliacion() {
     return;
   }
 
-  const dec = decs[0];
-  const declaredIsrFinal        = valueForDeclaration(dec, 'isr_final');
-  const declaredIvaFinal        = valueForDeclaration(dec, 'iva_final');
-  const declaredSaldo           = valueForDeclaration(dec, 'saldo_favor_aplicado');
-  const declaredCompensaciones  = valueForDeclaration(dec, 'compensaciones') || valueForDeclaration(dec, 'isr_total_aplicaciones');
-  const declaredIsrRetenido     = valueForDeclaration(dec, 'isr_retenido');
-  const totalConciliado         = (declaredIsrFinal || 0) + (declaredIvaFinal || 0);
+  const sumDec = (key) => decs.reduce((s, d) => s + (valueForDeclaration(d, key) || 0), 0);
+  const declaredIsrFinal        = sumDec('isr_final');
+  const declaredIvaFinal        = sumDec('iva_final');
+  const declaredSaldo           = sumDec('saldo_favor_aplicado');
+  const declaredCompensaciones  = sumDec('compensaciones') || sumDec('isr_total_aplicaciones');
+  const declaredIsrRetenido     = sumDec('isr_retenido');
+  const totalConciliado         = declaredIsrFinal + declaredIvaFinal;
   const diferencia              = totalEstimado - totalConciliado;
   const diferenciaPositiva      = diferencia >= 0;
+  const decLabel = decs.length === 1
+    ? `${periodLabel(declarationPeriodMonth(decs[0]))} · ${decs[0].rfc || ''} · operación ${decs[0].operation_number || 'sin número'}`
+    : `${decs.length} declaraciones · ${decs.map((d) => periodLabel(declarationPeriodMonth(d))).join(', ')}`;
 
   container.innerHTML = `
     <div class="card soft-card border-0 mt-4">
@@ -538,7 +541,7 @@ function renderDashboardConciliacion() {
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
           <div>
             <h2 class="h5 text-primary-brand mb-1">Estimado CFDI vs declaración SAT</h2>
-            <p class="small text-secondary mb-0">${periodLabel(declarationPeriodMonth(dec))} · ${dec.rfc || ''} · operación ${dec.operation_number || 'sin número'}</p>
+            <p class="small text-secondary mb-0">${decLabel}</p>
           </div>
           <a href="/conciliacion" class="btn btn-sm btn-outline-primary rounded-pill">Ver conciliación completa</a>
         </div>
