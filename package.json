@@ -8,6 +8,7 @@
     "build": "node scripts/build-check.mjs"
   },
   "dependencies": {
+    "@netlify/blobs": "^9.1.2",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2"
   }
