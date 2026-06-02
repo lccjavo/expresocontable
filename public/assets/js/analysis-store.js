@@ -283,8 +283,9 @@ async function loadAnalysisRemote() {
   const data = await authJson(`get-analysis?companyId=${encodeURIComponent(companyId)}`, { method: 'GET', headers: {} });
   if (data.analysis) {
     const local = loadAnalysis();
+    const localHasData = (local.invoices || []).length > 0 || (local.declarations || []).length > 0;
     const serverNewer = (data.analysis.updatedAt || '') >= (local.updatedAt || '');
-    if (serverNewer) {
+    if (serverNewer || !localHasData) {
       if (data.analysis.profile && typeof saveProfile === 'function') saveProfile(data.analysis.profile);
       const recomputed = recomputeAnalysis({ ...emptyAnalysis(), ...data.analysis, invoices: data.analysis.invoices || [] });
       saveAnalysis(recomputed);
