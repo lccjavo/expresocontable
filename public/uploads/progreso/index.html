@@ -57,7 +57,7 @@
   </div>
 </header>
 <div class="ec-sidebar-backdrop" data-sidebar-backdrop></div>
-    <main class="ec-main"><section class="page-hero pb-3"><div class="container-xxl"><span class="kicker">Carga</span><h1 class="display-5 display-title mt-2 mb-3">Subir documentos fiscales</h1><p class="lead-copy mb-0">Sube facturas para estimar tus impuestos y declaraciones SAT para guardar el cierre oficial del periodo. El histórico queda persistente en tu cuenta.</p></div></section>
+    <main class="ec-main"><section class="page-hero pb-3"><div class="container-xxl"><span class="kicker">Carga</span><h1 class="display-5 display-title mt-2 mb-3">Subir documentos fiscales</h1><p class="lead-copy mb-0">Carga XML, ZIP o PDF. Expreso Contable detecta automáticamente si son facturas CFDI o declaraciones SAT, evita duplicados y actualiza tu análisis fiscal.</p></div></section>
 <section class="container-xxl py-4">
   <div class="row g-4 align-items-stretch" data-upload-workspace>
     <div class="col-lg-8">
@@ -66,19 +66,19 @@
           <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
             <div>
               <h2 class="h3 text-primary-brand mb-1">Sube tus documentos fiscales</h2>
-              <p class="text-secondary mb-0">Separa facturas y declaraciones. Las facturas sirven para estimar; las declaraciones guardan lo presentado ante el SAT y permiten conciliar.</p>
+              <p class="text-secondary mb-0">Puedes subir XML, ZIP con XML o PDF de declaraciones SAT. Expreso Contable detectará automáticamente el tipo de documento, evitará duplicados y lo usará para estimar o conciliar tus impuestos.</p>
             </div>
             <span class="status-pill is-unlocked">Activo</span>
           </div>
 
           <div class="alert alert-info border-0 rounded-4 small mb-4">
-            <strong>Detección automática:</strong> sube XML o ZIP para facturas CFDI, o el PDF de tu declaración SAT — la app detecta el tipo de archivo y lo procesa correctamente. Guarda tu RFC para clasificar ingresos y gastos automáticamente.
+            <strong>RFC de mi negocio:</strong> captúralo para que el sistema identifique automáticamente qué facturas son ingresos y cuáles gastos. Si no lo capturas, intentará inferirlo del contenido de los CFDI.
           </div>
 
           <div class="row g-2 mb-4">
             <div class="col-md-8">
               <label for="business-rfc" class="form-label fw-bold text-primary-brand">RFC de mi negocio</label>
-              <input id="business-rfc" class="form-control form-control-lg" placeholder="Ej. XAXX010101000" autocomplete="off" maxlength="13" />
+              <input id="business-rfc" class="form-control form-control-lg" placeholder="Ej. GOIJ880401ED5" autocomplete="off" maxlength="13" />
             </div>
             <div class="col-md-4 d-grid align-items-end">
               <button class="btn btn-outline-primary btn-lg" type="button" data-save-rfc>Guardar RFC</button>
@@ -88,8 +88,8 @@
           <label class="dropzone rounded-4" for="invoice-files" data-dropzone aria-disabled="false">
             <span>
               <img src="/assets/branding/logo-icon-clean.png" alt="" class="dropzone-icon mb-3">
-              <strong class="d-block h5 text-primary-brand mb-2">Arrastra tus archivos aquí</strong>
-              <p class="mb-0 text-secondary" data-upload-status>XML / ZIP de facturas CFDI o PDF de declaración SAT — se detectan automáticamente.</p>
+              <strong class="d-block h5 text-primary-brand mb-2">Arrastra tus documentos fiscales aquí</strong>
+              <p class="mb-0 text-secondary" data-upload-status>XML, ZIP o PDF. Puedes subir facturas y declaraciones juntas.</p>
             </span>
             <input id="invoice-files" type="file" multiple accept=".xml,.pdf,.zip" hidden>
           </label>
@@ -132,7 +132,7 @@
     <div class="card-body p-4 p-md-5">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
         <div>
-          <h2 class="h4 text-primary-brand mb-1">Progreso del análisis fiscal</h2>
+          <h2 class="h4 text-primary-brand mb-1">Resultado del análisis</h2>
           <p class="text-secondary mb-0" data-analysis-progress-label>Sin análisis activo.</p>
         </div>
         <a class="btn btn-primary rounded-pill" href="/dashboard" data-dashboard-btn>Ver dashboard</a>
@@ -142,13 +142,13 @@
       </div>
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Archivos</span><strong data-counter="discovered">0</strong></div></div>
-        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>XML leídos</span><strong data-counter="xml">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Facturas CFDI</span><strong data-counter="xml">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Declaraciones SAT</span><strong data-counter="declaraciones">0</strong></div></div>
         <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Ingresos</span><strong data-counter="ingresos">0</strong></div></div>
         <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Gastos</span><strong data-counter="gastos">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Duplicados omitidos</span><strong data-counter="duplicados">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>No reconocidos</span><strong data-counter="errores">0</strong></div></div>
         <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Divisas</span><strong data-counter="divisas">0</strong></div></div>
-        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Duplicados</span><strong data-counter="duplicados">0</strong></div></div>
-        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Errores</span><strong data-counter="errores">0</strong></div></div>
-        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Declaraciones</span><strong data-counter="declaraciones">0</strong></div></div>
       </div>
       <h3 class="h6 text-primary-brand">Bitácora en tiempo real</h3>
       <ul class="list-group list-group-flush" data-analysis-log></ul>
