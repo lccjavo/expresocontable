@@ -421,21 +421,53 @@ function renderConciliacion() {
   }
   const calc = calculateTaxes(a, getProfile().taxRegime || 'actividad-empresarial');
   const dec = decs[0];
-  const declaredIncome = valueForDeclaration(dec, 'ingresos_cobrados');
-  const declaredIvaCargo = valueForDeclaration(dec, 'iva_cargo');
-  const declaredIvaAcred = valueForDeclaration(dec, 'iva_acreditable');
-  const declaredSaldo = valueForDeclaration(dec, 'saldo_favor_aplicado');
-  const declaredIvaFinal = valueForDeclaration(dec, 'iva_final');
-  const declaredIsr = valueForDeclaration(dec, 'isr_final');
-  const rows = [
-    ['Ingresos facturados sin IVA', money(calc.ingresosSinIva), 'Ingresos declarados', money(declaredIncome), declaredIncome ? calc.ingresosSinIva - declaredIncome : 0],
-    ['IVA trasladado según XML', money(a.totals.ivaTrasladadoIngresos), 'IVA a cargo declarado', money(declaredIvaCargo), declaredIvaCargo ? a.totals.ivaTrasladadoIngresos - declaredIvaCargo : 0],
-    ['IVA acreditable según gastos XML', money(a.totals.ivaAcreditableGastos), 'IVA acreditable declarado', money(declaredIvaAcred), declaredIvaAcred ? a.totals.ivaAcreditableGastos - declaredIvaAcred : 0],
-    ['Saldo a favor aplicado', '—', 'Saldo declarado', money(declaredSaldo), 0],
-    ['IVA final estimado', money(calc.ivaCargo), 'IVA final pagado', money(declaredIvaFinal), calc.ivaCargo - declaredIvaFinal],
-    ['ISR estimado por sistema', money(calc.isrNeto), 'ISR final pagado', money(declaredIsr), calc.isrNeto - declaredIsr],
-  ];
-  container.innerHTML = `<div class="alert alert-info border-0 rounded-4"><strong>Declaración usada:</strong> ${dec.rfc || ''} · ${periodLabel(declarationPeriodMonth(dec))} · operación ${dec.operation_number || 'sin número'}. Si hay más de una declaración en el periodo, se muestra la primera coincidencia.</div><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Sistema</th><th class="text-end">Monto</th><th>SAT</th><th class="text-end">Monto</th><th class="text-end">Diferencia</th></tr></thead><tbody>${rows.map(([l1,v1,l2,v2,d]) => `<tr><td>${l1}</td><td class="text-end">${v1}</td><td>${l2}</td><td class="text-end">${v2}</td><td class="text-end ${diffClass(d)}">${money(d)}</td></tr>`).join('')}</tbody></table></div>`;
+
+  // IVA — declaración
+  const declaredIvaTotalCargo   = valueForDeclaration(dec, 'iva_total_a_cargo');
+  const declaredIvaAcred        = valueForDeclaration(dec, 'iva_acreditable') || valueForDeclaration(dec, 'iva_pagado_gastos');
+  const declaredIvaImpCargo     = valueForDeclaration(dec, 'iva_impuesto_a_cargo');
+  const declaredSaldo           = valueForDeclaration(dec, 'saldo_favor_aplicado');
+  const declaredIvaFinal        = valueForDeclaration(dec, 'iva_final');
+  // ISR — declaración
+  const declaredIncome          = valueForDeclaration(dec, 'ingresos_efectivamente_cobrados') || valueForDeclaration(dec, 'ingresos_actividad');
+  const declaredIsrCargo        = valueForDeclaration(dec, 'isr_cantidad_a_cargo') || valueForDeclaration(dec, 'isr_impuesto_a_cargo');
+  const declaredIsrRetenido     = valueForDeclaration(dec, 'isr_retenido');
+  const declaredCompensaciones  = valueForDeclaration(dec, 'compensaciones') || valueForDeclaration(dec, 'isr_total_aplicaciones');
+  const declaredIsrFinal        = valueForDeclaration(dec, 'isr_final');
+
+  const d = (sys, decl) => (decl ? sys - decl : 0);
+  const sep = (label) => `<tr class="table-secondary"><td colspan="5"><strong class="small text-uppercase text-secondary">${label}</strong></td></tr>`;
+  const row = (l1, v1, l2, v2, diff) => `<tr><td>${l1}</td><td class="text-end">${v1}</td><td>${l2}</td><td class="text-end">${v2}</td><td class="text-end ${diffClass(diff)}">${diff !== 0 ? money(diff) : '—'}</td></tr>`;
+
+  const ivaFavorBadge = calc.ivaFavor > 0
+    ? `<br><span class="badge text-bg-success mt-1">IVA a favor este periodo: ${money(calc.ivaFavor)} — aplicable en declaraciones futuras</span>`
+    : '';
+
+  const rows = `
+    ${sep('IVA')}
+    ${row('IVA trasladado ingresos (XML)', money(a.totals.ivaTrasladadoIngresos), 'IVA total a cargo (SAT)', money(declaredIvaTotalCargo), d(a.totals.ivaTrasladadoIngresos, declaredIvaTotalCargo))}
+    ${row('IVA acreditable gastos (XML)', money(a.totals.ivaAcreditableGastos), 'IVA acreditable (SAT)', money(declaredIvaAcred), d(a.totals.ivaAcreditableGastos, declaredIvaAcred))}
+    ${row(calc.ivaFavor > 0 ? 'IVA a favor generado (XML)' : 'IVA neto a cargo (XML)', calc.ivaFavor > 0 ? `${money(calc.ivaFavor)} a favor` : money(calc.ivaCargo), 'IVA impuesto a cargo (SAT)', money(declaredIvaImpCargo), d(calc.ivaCargo, declaredIvaImpCargo))}
+    ${declaredSaldo ? row('—', '—', 'Saldo a favor aplicado (SAT)', money(declaredSaldo), 0) : ''}
+    ${row('IVA final estimado', calc.ivaFavor > 0 ? money(0) : money(calc.ivaCargo), 'IVA final pagado (SAT)', money(declaredIvaFinal), d(calc.ivaCargo, declaredIvaFinal))}
+    ${sep('ISR')}
+    ${row('Ingresos sin IVA (XML)', money(calc.ingresosSinIva), 'Ingresos declarados (SAT)', money(declaredIncome), d(calc.ingresosSinIva, declaredIncome))}
+    ${row('ISR calculado (sistema)', money(calc.isr), 'ISR a cargo antes de aplicaciones (SAT)', money(declaredIsrCargo), d(calc.isr, declaredIsrCargo))}
+    ${declaredIsrRetenido ? row('Retenciones ISR (XML)', money(a.totals.retencionesIngresos || 0), 'ISR retenido acreditable (SAT)', money(declaredIsrRetenido), 0) : ''}
+    ${declaredCompensaciones ? row('—', '—', 'Compensaciones / aplicaciones (SAT)', money(declaredCompensaciones), 0) : ''}
+    ${row('ISR neto estimado', money(calc.isrNeto), 'ISR final pagado (SAT)', money(declaredIsrFinal), d(calc.isrNeto, declaredIsrFinal))}
+  `;
+
+  container.innerHTML = `
+    <div class="alert alert-info border-0 rounded-4">
+      <strong>Declaración:</strong> ${dec.rfc || ''} · ${periodLabel(declarationPeriodMonth(dec))} · operación ${dec.operation_number || 'sin número'}${ivaFavorBadge}
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead><tr><th>Concepto sistema (XML)</th><th class="text-end">Estimado</th><th>Declaración SAT</th><th class="text-end">Declarado / pagado</th><th class="text-end">Diferencia</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 function rerenderAll() {
