@@ -1,0 +1,19 @@
+{
+  "name": "Expreso Contable",
+  "short_name": "Expreso",
+  "icons": [
+    {
+      "src": "/assets/branding/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/branding/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0E2F57",
+  "background_color": "#F7F5EF",
+  "display": "standalone"
+}

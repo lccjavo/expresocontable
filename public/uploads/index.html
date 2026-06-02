@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Subir documentos fiscales | Expreso Contable</title>
+  <meta name="description" content="Date un norte de cuánto pagar en impuestos subiendo tus facturas de ingresos y gastos." />
+  <meta name="theme-color" content="#0E2F57" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/branding/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/branding/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/branding/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body class="ec-app">
+  <div class="app-shell">
+    <aside class="ec-sidebar" data-auth-only>
+  <a class="ec-sidebar-brand" href="/dashboard" aria-label="Expreso Contable">
+    <img src="/assets/branding/logo-icon-clean.png" alt="" class="ec-sidebar-logo" />
+    <span><strong>Expreso</strong><small>Contable</small></span>
+  </a>
+  <nav class="ec-sidebar-nav" aria-label="Navegación principal">
+    <a data-nav-link href="/dashboard"><span class="ec-nav-ico">⌂</span>Dashboard</a>
+    <a data-nav-link href="/uploads"><span class="ec-nav-ico">↑</span>Subir documentos</a>
+    <div class="ec-nav-label">Gestión fiscal</div>
+    <a data-nav-link href="/facturas"><span class="ec-nav-ico">▧</span>Facturas</a>
+    <a data-nav-link href="/declaraciones"><span class="ec-nav-ico">SAT</span>Declaraciones</a>
+    <a data-nav-link href="/conciliacion"><span class="ec-nav-ico">✓</span>Conciliación</a>
+    <a data-nav-link href="/productos"><span class="ec-nav-ico">#</span>Productos</a>
+    <a data-nav-link href="/reportes"><span class="ec-nav-ico">↗</span>Reportes</a>
+    <a data-nav-link href="/calculo-impuestos"><span class="ec-nav-ico">$</span>Impuestos</a>
+  </nav>
+  <div class="ec-sidebar-footer">
+    <a data-nav-link href="/settings" class="ec-sidebar-settings">⚙ Configuración</a>
+  </div>
+</aside>
+<header class="ec-topbar" data-auth-only>
+  <button class="btn btn-light border ec-menu-toggle" type="button" data-sidebar-toggle aria-label="Abrir menú">☰</button>
+  <div class="ec-topbar-title d-none d-md-block" data-page-title>Expreso Contable</div>
+  <div class="ms-auto d-flex align-items-center gap-2">
+    <a class="btn btn-sm btn-primary rounded-pill px-3 d-none d-md-inline-flex" href="/uploads">Subir documentos</a>
+    <div class="dropdown">
+      <button class="btn btn-light border rounded-pill px-3 dropdown-toggle ec-company-btn" data-bs-toggle="dropdown" type="button"><span data-business-name>Mi cuenta</span></button>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2 ec-account-menu">
+        <li><h6 class="dropdown-header">Empresa activa</h6></li>
+        <li><div data-company-switcher></div></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item rounded-2" data-nav-link href="/settings">Configuración y empresas</a></li>
+        <li><a class="dropdown-item rounded-2" data-nav-link href="/reportes">Reportes</a></li>
+        <li><a class="dropdown-item rounded-2" data-nav-link href="/calculo-impuestos">Cálculo de impuestos</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><button class="dropdown-item rounded-2 text-danger" type="button" data-logout>Cerrar sesión</button></li>
+      </ul>
+    </div>
+  </div>
+</header>
+<div class="ec-sidebar-backdrop" data-sidebar-backdrop></div>
+    <main class="ec-main"><section class="page-hero pb-3"><div class="container-xxl"><span class="kicker">Carga</span><h1 class="display-5 display-title mt-2 mb-3">Subir documentos fiscales</h1><p class="lead-copy mb-0">Sube facturas para estimar tus impuestos y declaraciones SAT para guardar el cierre oficial del periodo. El histórico queda persistente en tu cuenta.</p></div></section>
+<section class="container-xxl py-4">
+  <div class="row g-4 align-items-stretch" data-upload-workspace>
+    <div class="col-lg-8">
+      <div class="card soft-card border-0 h-100">
+        <div class="card-body p-4 p-md-5">
+          <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <h2 class="h3 text-primary-brand mb-1">Sube tus documentos fiscales</h2>
+              <p class="text-secondary mb-0">Separa facturas y declaraciones. Las facturas sirven para estimar; las declaraciones guardan lo presentado ante el SAT y permiten conciliar.</p>
+            </div>
+            <span class="status-pill is-unlocked">Activo</span>
+          </div>
+
+          <div class="row g-3 mb-4" data-document-tabs>
+            <div class="col-md-6">
+              <button class="doc-type-card active" type="button" data-upload-mode="facturas">
+                <span class="doc-type-icon">XML</span>
+                <strong>Facturas</strong>
+                <small>XML o ZIP con XML/PDF de CFDI para estimar ingresos, gastos, IVA e ISR.</small>
+              </button>
+            </div>
+            <div class="col-md-6">
+              <button class="doc-type-card" type="button" data-upload-mode="declaraciones">
+                <span class="doc-type-icon">SAT</span>
+                <strong>Declaraciones</strong>
+                <small>PDF de declaración provisional/definitiva para guardar el resultado fiscal final.</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="alert alert-warning border-0 rounded-4 small mb-4">
+            <strong>Antes de analizar:</strong> guarda el RFC de tu negocio para clasificar automáticamente. Si no lo capturas, el sistema intentará inferirlo del bonche de CFDI.
+          </div>
+
+          <div class="row g-2 mb-4">
+            <div class="col-md-8">
+              <label for="business-rfc" class="form-label fw-bold text-primary-brand">RFC de mi negocio</label>
+              <input id="business-rfc" class="form-control form-control-lg" placeholder="Ej. XAXX010101000" autocomplete="off" maxlength="13" />
+            </div>
+            <div class="col-md-4 d-grid align-items-end">
+              <button class="btn btn-outline-primary btn-lg" type="button" data-save-rfc>Guardar RFC</button>
+            </div>
+          </div>
+
+          <label class="dropzone rounded-4" for="invoice-files" data-dropzone aria-disabled="false">
+            <span>
+              <img src="/assets/branding/logo-icon-clean.png" alt="" class="dropzone-icon mb-3">
+              <strong class="d-block h5 text-primary-brand mb-2">Arrastra tus facturas o declaraciones aquí</strong>
+              <p class="mb-0 text-secondary" data-upload-status>Selecciona XML/ZIP para facturas o PDF SAT para declaraciones.</p>
+            </span>
+            <input id="invoice-files" type="file" multiple accept=".xml,.pdf,.zip" hidden>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card soft-card border-0 mb-4">
+        <div class="card-body p-4">
+          <h2 class="h5 text-primary-brand">Documentos seleccionados</h2>
+          <ul class="list-group list-group-flush mt-3" data-file-list><li class="list-group-item text-secondary px-0">Todavía no has seleccionado archivos.</li></ul>
+        </div>
+      </div>
+      <div class="card soft-card border-0">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <div>
+              <h2 class="h5 text-primary-brand mb-1">Resumen guardado</h2>
+              <p class="small text-secondary mb-0">Última sincronización: <span data-metric="actualizado">Sin análisis</span></p><p class="small text-secondary mb-0">Vista: <strong data-current-period>Sin filtros</strong></p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap justify-content-end">
+              <select class="form-select form-select-sm rounded-pill w-auto" data-filter="year" data-clear-year data-year-options data-default-current-year data-empty-label="Todos los años"><option value="">Año</option></select>
+              <select class="form-select form-select-sm rounded-pill w-auto" data-filter="month" data-clear-month data-month-options data-empty-label="Todo el año"><option value="">Mes</option></select>
+              <button class="btn btn-sm btn-outline-danger rounded-pill" type="button" data-clear-analysis>Borrar</button>
+            </div>
+          </div>
+          <div class="row g-2 mt-3">
+            <div class="col-6"><div class="mini-metric"><span>Ingresos</span><strong data-metric="ingresos">$0.00</strong></div></div>
+            <div class="col-6"><div class="mini-metric"><span>Gastos</span><strong data-metric="gastos">$0.00</strong></div></div>
+            <div class="col-6"><div class="mini-metric"><span>Facturas</span><strong data-metric="facturas">0</strong></div></div>
+            <div class="col-6"><div class="mini-metric"><span>IVA</span><strong data-metric="iva">$0.00</strong></div></div>
+            <div class="col-12"><div class="mini-metric"><span>Estimado</span><strong data-metric="estimado">$0.00</strong></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card soft-card border-0 mt-4 d-none analysis-progress-page" data-progress-card>
+    <div class="card-body p-4 p-md-5">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <div>
+          <h2 class="h4 text-primary-brand mb-1">Progreso del análisis fiscal</h2>
+          <p class="text-secondary mb-0" data-analysis-progress-label>Sin análisis activo.</p>
+        </div>
+        <a class="btn btn-primary rounded-pill" href="/dashboard">Ver dashboard</a>
+      </div>
+      <div class="progress progress-soft mb-4" role="progressbar" aria-label="Progreso de análisis">
+        <div class="progress-bar" data-analysis-progress-bar style="width: 0%"></div>
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Archivos</span><strong data-counter="discovered">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>XML leídos</span><strong data-counter="xml">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Ingresos</span><strong data-counter="ingresos">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Gastos</span><strong data-counter="gastos">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Divisas</span><strong data-counter="divisas">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Duplicados</span><strong data-counter="duplicados">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Errores</span><strong data-counter="errores">0</strong></div></div>
+        <div class="col-6 col-md-3 col-xl"><div class="counter-card"><span>Declaraciones</span><strong data-counter="declaraciones">0</strong></div></div>
+      </div>
+      <h3 class="h6 text-primary-brand">Bitácora en tiempo real</h3>
+      <ul class="list-group list-group-flush" data-analysis-log></ul>
+    </div>
+  </div>
+</section></main>
+    <footer class="border-top py-4 mt-5 bg-white">
+      <div class="container-xxl d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+        <span>© <span data-year></span> Expreso Contable</span>
+        <span>No sustituye asesoría fiscal, contable o legal. Los cálculos son estimaciones informativas.</span>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="/assets/js/common.js"></script>
+  <script src="/assets/js/protected.js"></script>
+  <script src="/assets/js/analysis-store.js"></script>
+  <script src="/assets/js/uploads.js"></script>
+</body>
+</html>

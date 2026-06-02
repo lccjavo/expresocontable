@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inicio | Expreso Contable</title>
+  <meta name="description" content="Date un norte de cuánto pagar en impuestos subiendo tus facturas de ingresos y gastos." />
+  <meta name="theme-color" content="#0E2F57" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/branding/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/branding/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/branding/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="navbar navbar-expand-lg sticky-top border-bottom shadow-sm py-2">
+      <div class="container-xxl">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/" aria-label="Expreso Contable inicio">
+          <img src="/assets/branding/logo-icon-clean.png" alt="" class="brand-mark" />
+          <span class="brand-wordmark"><strong class="d-block">Expreso</strong><em class="d-block">Contable</em></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir navegación">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1 mt-3 mt-lg-0">
+            <li class="nav-item"><a class="nav-link" data-nav-link href="/dashboard" data-auth-only>Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" data-nav-link href="/uploads" data-auth-only>Subir documentos</a></li>
+            <li class="nav-item"><a class="btn btn-outline-primary rounded-pill px-4" href="/login" data-guest-only>Entrar</a></li>
+            <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="/register" data-guest-only>Registro</a></li>
+            <li class="nav-item dropdown" data-auth-only>
+              <button class="btn btn-light border rounded-pill px-3 dropdown-toggle" data-bs-toggle="dropdown" type="button"><span data-business-name>Mi cuenta</span></button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4 p-2">
+                <li><h6 class="dropdown-header">Herramientas</h6></li>
+                <li><a class="dropdown-item rounded-3" data-nav-link href="/facturas">Facturas</a></li>
+                <li><a class="dropdown-item rounded-3" data-nav-link href="/declaraciones">Declaraciones SAT</a></li>
+                <li><a class="dropdown-item rounded-3" data-nav-link href="/conciliacion">Conciliación</a></li>
+                <li><a class="dropdown-item rounded-3" data-nav-link href="/productos">Productos</a></li>
+                <li><a class="dropdown-item rounded-3" data-nav-link href="/reportes">Reportes</a></li>
+                <li><a class="dropdown-item rounded-3" data-nav-link href="/calculo-impuestos">Cálculo de impuestos</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item rounded-3" data-nav-link href="/settings">Configuración</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><h6 class="dropdown-header">Cambiar empresa</h6></li>
+                <li><div data-company-switcher></div></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item rounded-3 text-danger" type="button" data-logout>Cerrar sesión</button></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <main>
+<section class="page-hero">
+  <div class="container-xxl">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-7">
+        <span class="badge rounded-pill text-bg-light border text-primary-emphasis px-3 py-2 mb-3">Análisis de CFDI en minutos</span>
+        <h1 class="display-2 display-title mb-4">Date un norte de tus impuestos.</h1>
+        <p class="lead lead-copy mb-4">Sube tus facturas de ingresos y gastos para estimar cuánto podrías pagar, detectar duplicados, entender tus productos vendidos y generar reportes sin capturas manuales.</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-primary btn-lg rounded-pill px-4" href="/register">Crear cuenta</a>
+          <a class="btn btn-outline-primary btn-lg rounded-pill px-4" href="/login">Ya tengo cuenta</a>
+        </div>
+      </div>
+      <div class="col-lg-5 text-center">
+        <img src="/assets/branding/logo-main.png" class="logo-main" alt="Expreso Contable" />
+      </div>
+    </div>
+  </div>
+</section>
+<section class="container-xxl py-4">
+  <div class="row g-4">
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">XML</div><h2 class="h5 text-primary-brand">Carga facturas</h2><p class="text-secondary mb-0">XML, PDF o ZIP para armar tu base de ingresos y gastos.</p></div></div></div>
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">IVA</div><h2 class="h5 text-primary-brand">Calcula estimados</h2><p class="text-secondary mb-0">Un norte de IVA e impuestos basado en tus CFDI cargados.</p></div></div></div>
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">SKU</div><h2 class="h5 text-primary-brand">Productos</h2><p class="text-secondary mb-0">Agrupa conceptos para ver qué productos se venden más.</p></div></div></div>
+    <div class="col-md-6 col-xl-3"><div class="card grid-card soft-card h-100"><div class="card-body p-4"><div class="icon-tile mb-3">↗</div><h2 class="h5 text-primary-brand">Reportes</h2><p class="text-secondary mb-0">Resumen, filtros por periodo y claridad para tomar decisiones.</p></div></div></div>
+  </div>
+</section>
+<section class="container-xxl py-4">
+  <div class="alert rounded-4 border-0 soft-card bg-white p-4">
+    <strong class="text-primary-brand">Aviso importante:</strong> Expreso Contable no sustituye a un contador ni constituye asesoría fiscal, contable o legal. Los cálculos son estimaciones informativas y pueden variar por cambios de ley, reglas del SAT, interpretación fiscal, deducciones válidas, acreditamientos, retenciones, régimen fiscal y revisión profesional.
+  </div>
+</section>
+</main>
+    <footer class="border-top py-4 mt-5 bg-white">
+      <div class="container-xxl d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+        <span>© <span data-year></span> Expreso Contable</span>
+        <span>No sustituye asesoría fiscal, contable o legal. Los cálculos son estimaciones informativas.</span>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/common.js"></script>
+  
+  
+</body>
+</html>

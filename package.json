@@ -1,0 +1,18 @@
+{
+  "name": "expreso-contable",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build": "npm test && node scripts/build-check.mjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^9.1.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^3.0.0"
+  }
+}
