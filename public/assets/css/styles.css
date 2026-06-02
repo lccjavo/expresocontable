@@ -675,3 +675,12 @@ body.ec-app .table > :not(caption) > * > * { padding: .78rem .9rem; }
   .ec-list-pane, .ec-detail-pane { min-height: auto; }
   .ec-list-pane { max-height: 420px; }
 }
+
+@media print {
+  .ec-sidebar, .ec-topbar, .ec-sidebar-backdrop, footer,
+  [data-auto-filter-panel] .dropdown, [data-auto-filter-panel] [data-clear-filters],
+  .page-hero, [data-expense-warning] { display: none !important; }
+  .ec-main { margin-left: 0 !important; padding-top: 0 !important; }
+  .app-shell { display: block !important; }
+  .soft-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+}

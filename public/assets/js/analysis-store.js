@@ -546,6 +546,15 @@ function setText(selector, value) {
   document.querySelectorAll(selector).forEach((el) => { el.textContent = value; });
 }
 
+function downloadCSV(headers, rows, filename) {
+  const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const lines = [headers, ...rows].map((r) => r.map(esc).join(','));
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  Object.assign(document.createElement('a'), { href: url, download: filename }).click();
+  URL.revokeObjectURL(url);
+}
+
 
 function renderMissingExpenseNotice(analysis = loadAnalysis()) {
   const container = document.querySelector('[data-expense-warning]');

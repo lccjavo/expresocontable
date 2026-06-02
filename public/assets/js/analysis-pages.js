@@ -41,7 +41,16 @@ function ensureFilterPanel(title = 'Filtros') {
             <h2 class="h5 text-primary-brand mb-1">${title}</h2>
             <div class="small text-secondary" data-filter-result-label>Aplicando filtros al histórico...</div>
           </div>
-          <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" data-clear-filters>Limpiar filtros</button>
+          <div class="d-flex gap-2 flex-wrap">
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown">Exportar</button>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-1">
+                <li><button class="dropdown-item rounded-2" type="button" data-export-csv>Excel / CSV</button></li>
+                <li><button class="dropdown-item rounded-2" type="button" data-export-pdf>PDF (imprimir)</button></li>
+              </ul>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button" data-clear-filters>Limpiar filtros</button>
+          </div>
         </div>
         <div class="row g-3">
           <div class="col-md-2"><label class="form-label small fw-bold">Año</label><select class="form-select" data-filter="year" data-year-options data-default-current-year><option value="">Todos</option></select></div>
@@ -594,6 +603,96 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 window.addEventListener('analysis-updated', () => { populateFilterControls(); rerenderAll(); });
 window.addEventListener('analysis-filter-changed', rerenderAll);
-
 window.addEventListener('active-company-changed', () => { populateFilterControls(); rerenderAll(); });
 window.addEventListener('profile-updated', () => { populateFilterControls(); rerenderAll(); });
+
+// ── Export ────────────────────────────────────────────────────────────────────
+
+function exportFilename(base) {
+  const f = readFiltersFromDom();
+  const tag = f.month ? periodLabel(f.month).replace(/\s/g, '-') : (f.year || 'total');
+  return `${base}-${tag}.csv`;
+}
+
+function exportFacturasCSV() {
+  const a = currentFilteredAnalysis();
+  const headers = ['Periodo','Fecha Emisión','Tipo','Emisor','RFC Emisor','Receptor','RFC Receptor','Moneda','Subtotal','IVA','Total'];
+  const rows = (a.invoices || []).slice().sort((x,y) => invoiceFiscalDate(y).localeCompare(invoiceFiscalDate(x))).map((inv) => [
+    periodLabel(invoiceMonth(inv)), inv.fechaEmision || '', kindForActiveCompany(inv),
+    inv.emisorNombre || '', inv.emisorRfc || '', inv.receptorNombre || '', inv.receptorRfc || '',
+    inv.moneda || 'MXN', amountMxn(inv,'subtotal'), amountMxn(inv,'ivaTrasladado'), amountMxn(inv,'total')
+  ]);
+  downloadCSV(headers, rows, exportFilename('facturas'));
+}
+
+function exportDeclaracionesCSV() {
+  const a = currentFilteredAnalysis();
+  const headers = ['Periodo','RFC','Contribuyente','Tipo','Periodicidad','Núm. Operación','ISR Final','IVA Final','Fecha Presentación','Archivo'];
+  const rows = (a.declarations || []).map((d) => [
+    periodLabel(declarationPeriodMonth(d)), d.rfc || '', d.taxpayer_name || '',
+    d.declaration_type || '', d.periodicity || '', d.operation_number || '',
+    valueForDeclaration(d,'isr_final'), valueForDeclaration(d,'iva_final'),
+    d.submitted_at || '', d.source_file_name || ''
+  ]);
+  downloadCSV(headers, rows, exportFilename('declaraciones'));
+}
+
+function exportReportesCSV() {
+  const a = currentFilteredAnalysis();
+  const headers = ['Periodo','Ingresos','Gastos','IVA Ingresos','IVA Gastos','IVA Neto','Facturas'];
+  const rows = Object.entries(a.byMonth || {}).sort((x,y) => y[0].localeCompare(x[0])).map(([month, row]) => [
+    periodLabel(month), row.ingresos || 0, row.gastos || 0,
+    row.ivaIngresos || 0, row.ivaGastos || 0, (row.ivaIngresos || 0) - (row.ivaGastos || 0), row.count || 0
+  ]);
+  downloadCSV(headers, rows, exportFilename('reportes'));
+}
+
+function exportProductosCSV() {
+  const a = currentFilteredAnalysis();
+  const headers = ['Producto','Cantidad','Importe MXN','Núm. Facturas','Periodos'];
+  const rows = Object.values(a.products || {}).sort((x,y) => y.importe - x.importe).map((p) => [
+    p.descripcion || '', p.cantidad || 0, p.importe || 0, p.facturas || 0,
+    (p.months || []).map(periodLabel).join('; ')
+  ]);
+  downloadCSV(headers, rows, exportFilename('productos'));
+}
+
+function exportConciliacionCSV() {
+  const a = currentFilteredAnalysis();
+  const calc = calculateTaxes(a, getProfile().taxRegime || 'actividad-empresarial');
+  const dec = (a.declarations || [])[0];
+  const headers = ['Concepto Sistema','Estimado MXN','Concepto SAT','Declarado/Pagado MXN'];
+  const rows = [
+    ['Ingresos sin IVA (XML)', calc.ingresosSinIva, 'Ingresos declarados (SAT)', valueForDeclaration(dec,'ingresos_efectivamente_cobrados') || valueForDeclaration(dec,'ingresos_actividad')],
+    ['IVA trasladado ingresos (XML)', a.totals.ivaTrasladadoIngresos, 'IVA total a cargo (SAT)', valueForDeclaration(dec,'iva_total_a_cargo')],
+    ['IVA acreditable gastos (XML)', a.totals.ivaAcreditableGastos, 'IVA acreditable (SAT)', valueForDeclaration(dec,'iva_acreditable')],
+    [calc.ivaFavor > 0 ? 'IVA a favor generado (XML)' : 'IVA neto a cargo (XML)', calc.ivaFavor > 0 ? calc.ivaFavor : calc.ivaCargo, 'Saldo a favor aplicado (SAT)', valueForDeclaration(dec,'saldo_favor_aplicado')],
+    ['IVA final estimado', calc.ivaCargo, 'IVA final pagado (SAT)', valueForDeclaration(dec,'iva_final')],
+    ['ISR calculado', calc.isr, 'ISR a cargo (SAT)', valueForDeclaration(dec,'isr_cantidad_a_cargo') || valueForDeclaration(dec,'isr_impuesto_a_cargo')],
+    ['ISR neto estimado', calc.isrNeto, 'ISR final pagado (SAT)', valueForDeclaration(dec,'isr_final')],
+    ['Total estimado', calc.isrNeto + calc.ivaCargo, 'Total conciliado SAT', (valueForDeclaration(dec,'isr_final') || 0) + (valueForDeclaration(dec,'iva_final') || 0)],
+  ];
+  downloadCSV(headers, rows, exportFilename('conciliacion'));
+}
+
+function exportDashboardCSV() {
+  const a = currentFilteredAnalysis();
+  const calc = calculateTaxes(a, getProfile().taxRegime || 'actividad-empresarial');
+  const headers = ['Concepto','Importe MXN','Descripción'];
+  downloadCSV(headers, calc.rows || [], exportFilename('dashboard'));
+}
+
+function exportCurrentCSV() {
+  const path = location.pathname;
+  if (path.startsWith('/facturas')) exportFacturasCSV();
+  else if (path.startsWith('/declaraciones')) exportDeclaracionesCSV();
+  else if (path.startsWith('/reportes')) exportReportesCSV();
+  else if (path.startsWith('/productos')) exportProductosCSV();
+  else if (path.startsWith('/conciliacion')) exportConciliacionCSV();
+  else exportDashboardCSV();
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-export-csv]')) exportCurrentCSV();
+  if (e.target.closest('[data-export-pdf]')) window.print();
+});

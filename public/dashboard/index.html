@@ -30,7 +30,7 @@
     <a data-nav-link href="/conciliacion"><span class="ec-nav-ico">✓</span>Conciliación</a>
     <a data-nav-link href="/productos"><span class="ec-nav-ico">#</span>Productos</a>
     <a data-nav-link href="/reportes"><span class="ec-nav-ico">↗</span>Reportes</a>
-    <a data-nav-link href="/calculo-impuestos"><span class="ec-nav-ico">$</span>Impuestos</a>
+    
   </nav>
   <div class="ec-sidebar-footer">
     <a data-nav-link href="/settings" class="ec-sidebar-settings">⚙ Configuración</a>
@@ -90,6 +90,13 @@
     <div class="card-body p-4">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div><h2 class="h5 text-primary-brand mb-1">Cómo se calculó</h2><p class="small text-secondary mb-0" data-tax-note>Selecciona un régimen para ver el detalle.</p></div>
+        <div class="dropdown">
+          <button class="btn btn-sm btn-outline-secondary rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown">Exportar</button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-1">
+            <li><button class="dropdown-item rounded-2" type="button" data-export-csv>Excel / CSV</button></li>
+            <li><button class="dropdown-item rounded-2" type="button" data-export-pdf>PDF (imprimir)</button></li>
+          </ul>
+        </div>
       </div>
       <div class="table-responsive">
         <table class="table align-middle">
