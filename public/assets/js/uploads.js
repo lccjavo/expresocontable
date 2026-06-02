@@ -302,9 +302,16 @@ function renderFileList(files) {
 function setProgress(percent, text) {
   const bar = document.querySelector('[data-analysis-progress-bar]');
   const label = document.querySelector('[data-analysis-progress-label]');
+  const btn = document.querySelector('[data-dashboard-btn]');
+  const done = percent >= 100;
   if (bar) {
     bar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
     bar.setAttribute('aria-valuenow', String(Math.round(percent)));
+    bar.classList.toggle('bg-success', done);
+  }
+  if (btn) {
+    btn.classList.toggle('btn-primary', !done);
+    btn.classList.toggle('btn-success', done);
   }
   if (label) label.textContent = text;
 }
