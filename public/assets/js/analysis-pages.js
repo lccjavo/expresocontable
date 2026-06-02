@@ -470,6 +470,106 @@ function renderConciliacion() {
     </div>`;
 }
 
+function concilRow(label, value, strong = false) {
+  return `<div class="d-flex justify-content-between gap-2 py-1 border-bottom border-light-subtle">
+    <span class="small text-secondary">${label}</span>
+    <span class="small ${strong ? 'fw-bold' : ''}">${value}</span>
+  </div>`;
+}
+
+function renderDashboardConciliacion() {
+  const container = document.querySelector('[data-dashboard-conciliacion]');
+  if (!container) return;
+  const a = currentFilteredAnalysis();
+  const calc = calculateTaxes(a, getProfile().taxRegime || 'actividad-empresarial');
+  const totalEstimado = calc.isrNeto + calc.ivaCargo;
+  const decs = a.declarations || [];
+
+  const cfdiBlock = `
+    <div class="small text-secondary mb-2 fw-bold text-uppercase">Resumen CFDI detectado</div>
+    ${concilRow('Ingresos sin IVA', money(calc.ingresosSinIva))}
+    ${concilRow('IVA cobrado', money(a.totals.ivaTrasladadoIngresos))}
+    ${concilRow('Gastos sin IVA', money(calc.gastosSinIva))}
+    ${concilRow('IVA acreditable', money(a.totals.ivaAcreditableGastos))}
+    ${concilRow('ISR estimado', money(calc.isr))}`;
+
+  if (!decs.length) {
+    container.innerHTML = `
+      <div class="card soft-card border-0 mt-4">
+        <div class="card-body p-4">
+          <h2 class="h5 text-primary-brand mb-3">Estimado CFDI vs declaración SAT</h2>
+          <div class="row g-3">
+            <div class="col-md-5"><div class="p-3 rounded-3 bg-light">${cfdiBlock}<hr class="my-2">${concilRow('Total estimado CFDI', money(totalEstimado), true)}</div></div>
+            <div class="col-md-7 d-flex align-items-center">
+              <div class="text-secondary small p-3">
+                <strong class="d-block mb-1 text-primary-brand">Falta la declaración SAT</strong>
+                Sube el PDF de tu declaración provisional para ver el total conciliado real (después de IVA a favor, compensaciones y retenciones aplicadas) y compararlo contra este estimado.
+                <div class="mt-3"><a href="/uploads" class="btn btn-sm btn-outline-primary rounded-pill">Subir declaración SAT</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const dec = decs[0];
+  const declaredIsrFinal        = valueForDeclaration(dec, 'isr_final');
+  const declaredIvaFinal        = valueForDeclaration(dec, 'iva_final');
+  const declaredSaldo           = valueForDeclaration(dec, 'saldo_favor_aplicado');
+  const declaredCompensaciones  = valueForDeclaration(dec, 'compensaciones') || valueForDeclaration(dec, 'isr_total_aplicaciones');
+  const declaredIsrRetenido     = valueForDeclaration(dec, 'isr_retenido');
+  const totalConciliado         = (declaredIsrFinal || 0) + (declaredIvaFinal || 0);
+  const diferencia              = totalEstimado - totalConciliado;
+  const diferenciaPositiva      = diferencia >= 0;
+
+  container.innerHTML = `
+    <div class="card soft-card border-0 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+          <div>
+            <h2 class="h5 text-primary-brand mb-1">Estimado CFDI vs declaración SAT</h2>
+            <p class="small text-secondary mb-0">${periodLabel(declarationPeriodMonth(dec))} · ${dec.rfc || ''} · operación ${dec.operation_number || 'sin número'}</p>
+          </div>
+          <a href="/conciliacion" class="btn btn-sm btn-outline-primary rounded-pill">Ver conciliación completa</a>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 bg-light h-100">
+              ${cfdiBlock}
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 bg-light h-100">
+              <div class="small text-secondary mb-2 fw-bold text-uppercase">Conciliación</div>
+              ${concilRow(calc.ivaFavor > 0 ? 'IVA a favor generado' : 'IVA del periodo', calc.ivaFavor > 0 ? `${money(calc.ivaFavor)} a favor` : money(calc.ivaCargo))}
+              ${declaredSaldo     ? concilRow('IVA a favor aplicado',   `− ${money(declaredSaldo)}`)         : ''}
+              ${declaredIsrRetenido ? concilRow('ISR retenido aplicado', `− ${money(declaredIsrRetenido)}`)  : ''}
+              ${declaredCompensaciones ? concilRow('Compensaciones ISR', `− ${money(declaredCompensaciones)}`) : ''}
+              <hr class="my-2">
+              ${concilRow('ISR final pagado (SAT)', money(declaredIsrFinal || 0))}
+              ${concilRow('IVA final pagado (SAT)', money(declaredIvaFinal || 0))}
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background:${diferenciaPositiva ? 'rgba(25,135,84,.08)' : 'rgba(255,193,7,.12)'}">
+              <div class="small text-secondary mb-2 fw-bold text-uppercase">Totales</div>
+              ${concilRow('Total estimado CFDI', money(totalEstimado), true)}
+              ${concilRow('Total conciliado SAT', money(totalConciliado), true)}
+              <hr class="my-2">
+              ${concilRow('Diferencia', money(Math.abs(diferencia)), true)}
+              <p class="small text-secondary mt-2 mb-0">
+                ${diferenciaPositiva
+                  ? 'La declaración pagó menos que el estimado bruto — la diferencia se explica por saldos a favor, compensaciones o retenciones aplicadas.'
+                  : 'La declaración pagó más que el estimado — puede haber conceptos no capturados en los XML.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
 function rerenderAll() {
   renderReportes();
   renderProductos();
@@ -479,6 +579,7 @@ function rerenderAll() {
   renderImpuestos();
   renderDashboardFilteredMetrics();
   renderFilteredMetrics();
+  renderDashboardConciliacion();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -488,6 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
       taxRegime: document.querySelector('[data-tax-regime]')?.value || 'actividad-empresarial'
     });
     renderImpuestos();
+    renderDashboardConciliacion();
   }));
 });
 window.addEventListener('analysis-updated', () => { populateFilterControls(); rerenderAll(); });
